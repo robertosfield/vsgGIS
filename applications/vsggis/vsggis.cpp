@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "gdal_priv.h"
+#include "ogr_spatialref.h"
 
 int main(int argc, char** argv)
 {
@@ -17,6 +18,11 @@ int main(int argc, char** argv)
 
     GDALAllRegister();
 
+    OGRSpatialReference* wgs84 = OGRSpatialReference::GetWGS84SRS();
+
+    char* wgs84WKT = NULL;
+    wgs84->exportToWkt( &wgs84WKT );
+    std::cout<<"wgs84WKT = "<<wgs84WKT<<std::endl;
 
     for(int ai=1; ai<argc; ++ai)
     {
@@ -26,6 +32,73 @@ int main(int argc, char** argv)
         if (poDataset)
         {
             std::cout<<"\nSuccessfully loaded "<<filename<<",  poDataset = "<<poDataset<<std::endl;
+
+            if (poDataset->GetProjectionRef())
+            {
+                char* projectionRef = const_cast<char*>(poDataset->GetProjectionRef());
+
+                OGRSpatialReference oSRS;
+                oSRS.importFromWkt(&projectionRef);
+
+                OGRCoordinateTransformation* transform = OGRCreateCoordinateTransformation(&oSRS, wgs84);
+
+
+                std::vector<vsg::dvec3> src_vertices{
+                    {0.0, 0.0, 0.0},
+                    {1.0, 0.0, 0.0},
+                    {0.0, 1.0, 0.0},
+                    {0.0, 0.0, 0.0},
+                    {1.0, 1.0, 0.0}
+                };
+
+                std::cout<<"src_vertices.size() "<<src_vertices.size()<<std::endl;
+
+                for(auto& v : src_vertices) std::cout<<"src_vertex "<<v<<std::endl;
+
+                const int numVertices = src_vertices.size();
+
+                double* x = new double[numVertices];
+                double* y = new double[numVertices];
+                double* z = new double[numVertices];
+                int* pabSuccess = new int[numVertices];
+
+                for(int vi = 0; vi<numVertices; ++vi)
+                {
+                    x[vi] = src_vertices[vi].x;
+                    y[vi] = src_vertices[vi].y;
+                    z[vi] = src_vertices[vi].z;
+                    pabSuccess[vi] = 0;
+                }
+
+                int result = transform->TransformEx( numVertices, x, y, z, pabSuccess);
+
+                std::cout<<"\nSet up tranform "<<transform<<" result = "<<result<<std::endl;
+
+                OGRCoordinateTransformation::DestroyCT(transform);
+
+                std::vector<vsg::dvec3> dst_vertices;
+                dst_vertices.reserve(numVertices);
+
+                std::cout<<"dst_vertices.size() "<<dst_vertices.size()<<std::endl;
+
+                for(int vi = 0; vi<numVertices; ++vi)
+                {
+                    std::cout<<"    pabSuccess["<<vi<<"] = "<<pabSuccess[vi]<<std::endl;
+                    if (pabSuccess[vi])
+                    {
+                        dst_vertices.emplace_back(x[vi], y[vi], z[vi]);
+                    }
+                }
+
+                for(auto& v : dst_vertices) std::cout<<"dst_vertex "<<v<<std::endl;
+
+                delete [] x;
+                delete [] y;
+                delete [] z;
+                delete [] pabSuccess;
+            }
+
+
             double        adfGeoTransform[6];
             printf( "Driver: %s/%s\n",
                     poDataset->GetDriver()->GetDescription(),
