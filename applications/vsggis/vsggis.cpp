@@ -33,6 +33,18 @@ int main(int argc, char** argv)
         {
             std::cout<<"\nSuccessfully loaded "<<filename<<",  poDataset = "<<poDataset<<std::endl;
 
+            double adfGeoTransform[6];
+            if( poDataset->GetGeoTransform( adfGeoTransform ) == CE_None )
+            {
+                printf( "Origin = (%.6f,%.6f)\n",
+                        adfGeoTransform[0], adfGeoTransform[3] );
+                printf( "Pixel Size = (%.6f,%.6f)\n",
+                        adfGeoTransform[1], adfGeoTransform[5] );
+
+                std::cout<<"adfGeoTransform "<<adfGeoTransform[0]<<"\t"<<adfGeoTransform[1]<<"\t"<<adfGeoTransform[2]<<std::endl;
+                std::cout<<"                "<<adfGeoTransform[3]<<"\t"<<adfGeoTransform[4]<<"\t"<<adfGeoTransform[5]<<std::endl;
+            }
+
             if (poDataset->GetProjectionRef())
             {
                 char* projectionRef = const_cast<char*>(poDataset->GetProjectionRef());
@@ -43,12 +55,19 @@ int main(int argc, char** argv)
                 OGRCoordinateTransformation* transform = OGRCreateCoordinateTransformation(&oSRS, wgs84);
 
 
+                vsg::dvec3 origin(adfGeoTransform[0], adfGeoTransform[3], 0.0);
+                vsg::dvec3 dx(adfGeoTransform[1], adfGeoTransform[2], 0.0);
+                vsg::dvec3 dy(adfGeoTransform[4], adfGeoTransform[5], 0.0);
+                vsg::dvec3 width = dx * double(poDataset->GetRasterXSize());
+                vsg::dvec3 height = dy * double(poDataset->GetRasterYSize());
+
+
                 std::vector<vsg::dvec3> src_vertices{
-                    {0.0, 0.0, 0.0},
-                    {1.0, 0.0, 0.0},
-                    {0.0, 1.0, 0.0},
-                    {0.0, 0.0, 0.0},
-                    {1.0, 1.0, 0.0}
+                    origin,
+                    origin+width,
+                    origin+width+height,
+                    origin+height,
+                    origin+(width+height)*0.5,
                 };
 
                 std::cout<<"src_vertices.size() "<<src_vertices.size()<<std::endl;
@@ -99,7 +118,6 @@ int main(int argc, char** argv)
             }
 
 
-            double        adfGeoTransform[6];
             printf( "Driver: %s/%s\n",
                     poDataset->GetDriver()->GetDescription(),
                     poDataset->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) );
@@ -108,16 +126,6 @@ int main(int argc, char** argv)
                     poDataset->GetRasterCount() );
             if( poDataset->GetProjectionRef()  != NULL )
                 printf( "Projection is `%s'\n", poDataset->GetProjectionRef() );
-            if( poDataset->GetGeoTransform( adfGeoTransform ) == CE_None )
-            {
-                printf( "Origin = (%.6f,%.6f)\n",
-                        adfGeoTransform[0], adfGeoTransform[3] );
-                printf( "Pixel Size = (%.6f,%.6f)\n",
-                        adfGeoTransform[1], adfGeoTransform[5] );
-
-                std::cout<<"adfGeoTransform "<<adfGeoTransform[0]<<"\t"<<adfGeoTransform[1]<<"\t"<<adfGeoTransform[2]<<std::endl;
-                std::cout<<"                "<<adfGeoTransform[3]<<"\t"<<adfGeoTransform[4]<<"\t"<<adfGeoTransform[5]<<std::endl;
-            }
 
 
             for(int i=1; i<=poDataset->GetRasterCount(); ++i)
