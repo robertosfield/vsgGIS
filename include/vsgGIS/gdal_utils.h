@@ -28,17 +28,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
 
+#include <memory>
+
 namespace vsgGIS
 {
 
     /// Call GDALOpen(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    std::shared_ptr<GDALDataset> openDataSet(const char *filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openDataSet(const char *filename, GDALAccess access)
     {
         return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpen(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }
 
     /// Call GDALOpenShared(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    std::shared_ptr<GDALDataset> openSharedDataSet(const char *filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openSharedDataSet(const char *filename, GDALAccess access)
     {
         return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpenShared(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }

@@ -29,6 +29,7 @@ target_include_directories(vsgGIS PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/vsgGIS>
     $<INSTALL_INTERFACE:include>
+    ${GDAL_INCLUDE_DIR}
     ${EXTRA_INCLUDES}
 )
 
@@ -61,14 +62,14 @@ install(EXPORT vsgGISTargets
 )
 
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgGISConfigVersion.cmake"
+write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
     VERSION ${VSGGIS_MAJOR_VERSION}.${VSGGIS_MINOR_VERSION}.${VSGGIS_PATCH_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
-configure_file("${CMAKE_SOURCE_DIR}/src/vsgGISConfig.cmake.in" "${CMAKE_BINARY_DIR}/src/vsgGISConfig.cmake" @ONLY)
+configure_file("${CMAKE_SOURCE_DIR}/src/vsgGIS/vsgGISConfig.cmake.in" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" @ONLY)
 
-install(FILES "${CMAKE_BINARY_DIR}/src/vsgGISConfig.cmake" "${CMAKE_BINARY_DIR}/src/vsgGISConfigVersion.cmake"
+install(FILES "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
     DESTINATION lib/cmake/vsgGIS
 )
 

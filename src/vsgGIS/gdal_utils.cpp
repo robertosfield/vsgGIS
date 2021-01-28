@@ -23,8 +23,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <vsgGIS/gdal_utils.h>
 
-using namespace vsgGIS;
+#include <cstring>
 
+using namespace vsgGIS;
 
 bool vsgGIS::compatibleDatasetProjections(const GDALDataset& lhs, const GDALDataset& rhs)
 {
