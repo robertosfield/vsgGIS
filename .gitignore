@@ -13,8 +13,8 @@ CMakeScripts
 Makefile
 cmake_install.cmake
 install_manifest.txt
-src/vsgGISConfig.cmake
-src/vsgGISConfigVersion.cmake
+src/vsgGIS/vsgGISConfig.cmake
+src/vsgGIS/vsgGISConfigVersion.cmake
 
 # Compiled Object files
 *.slo
@@ -52,7 +52,7 @@ src/vsgGISConfigVersion.cmake
 *.vcxproj.user
 .vs/
 x64/
-src/vsg/vsg.dir/
+src/vsgGIS/vsgGIS.dir/
 *.pdb
 *.tlog
 *.log
