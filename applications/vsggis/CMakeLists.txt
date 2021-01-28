@@ -12,6 +12,7 @@ target_include_directories(vsggis PRIVATE
 set_target_properties(vsggis PROPERTIES OUTPUT_NAME vsggis)
 
 target_link_libraries(vsggis
+    vsgGIS
     vsg::vsg
     ${GDAL_LIBRARY}
 )
