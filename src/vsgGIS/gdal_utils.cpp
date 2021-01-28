@@ -60,16 +60,16 @@ bool vsgGIS::compatibleDatasetProjectionsTransformAndSizes(const GDALDataset& lh
     double rhs_GeoTransform[6];
 
     int numberWithValidTransforms = 0;
-    if (non_const_lhs.GetGeoTransform( lhs_GeoTransform ) == CE_None) ++numberWithValidTransforms;
-    if (non_const_rhs.GetGeoTransform( rhs_GeoTransform ) == CE_None) ++numberWithValidTransforms;
+    if (non_const_lhs.GetGeoTransform(lhs_GeoTransform) == CE_None) ++numberWithValidTransforms;
+    if (non_const_rhs.GetGeoTransform(rhs_GeoTransform) == CE_None) ++numberWithValidTransforms;
 
     // if neither have transform mark as compatible
-    if (numberWithValidTransforms==0) return true;
+    if (numberWithValidTransforms == 0) return true;
 
     // only one has a transform so must be incompatible
-    if (numberWithValidTransforms==1) return false;
+    if (numberWithValidTransforms == 1) return false;
 
-    for(int i=0; i<6; ++i)
+    for (int i = 0; i < 6; ++i)
     {
         if (lhs_GeoTransform[i] != rhs_GeoTransform[i])
         {

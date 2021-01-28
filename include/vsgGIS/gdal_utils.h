@@ -34,13 +34,13 @@ namespace vsgGIS
 {
 
     /// Call GDALOpen(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    inline std::shared_ptr<GDALDataset> openDataSet(const char *filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openDataSet(const char* filename, GDALAccess access)
     {
         return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpen(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }
 
     /// Call GDALOpenShared(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    inline std::shared_ptr<GDALDataset> openSharedDataSet(const char *filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openSharedDataSet(const char* filename, GDALAccess access)
     {
         return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpenShared(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }
@@ -58,7 +58,7 @@ namespace vsgGIS
         Iterator itr = first;
         ++itr;
 
-        for(; itr != last; ++itr)
+        for (; itr != last; ++itr)
         {
             if (!compare(*first, *itr)) return false;
         }
@@ -71,4 +71,4 @@ namespace vsgGIS
     {
         return all_equal(container.begin(), container.end(), compare);
     }
-}
+} // namespace vsgGIS
