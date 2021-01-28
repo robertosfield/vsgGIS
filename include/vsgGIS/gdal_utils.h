@@ -51,6 +51,7 @@ namespace vsgGIS
     /// return true if two GDALDataset has the same projection, geo transform and dimensions indicating they are perfectly pixel aliged and matched in size.
     extern VSGGIS_DECLSPEC bool compatibleDatasetProjectionsTransformAndSizes(const GDALDataset& lhs, const GDALDataset& rhs);
 
+    /// call binary comparison opeators on dereferenced items in specified range.
     template<class Iterator, class BinaryPredicate>
     bool all_equal(Iterator first, Iterator last, BinaryPredicate compare)
     {
@@ -60,15 +61,9 @@ namespace vsgGIS
 
         for (; itr != last; ++itr)
         {
-            if (!compare(*first, *itr)) return false;
+            if (!compare(**first, **itr)) return false;
         }
 
         return true;
-    }
-
-    template<class Container, class BinaryPredicate>
-    bool all_equal(Container& container, BinaryPredicate compare)
-    {
-        return all_equal(container.begin(), container.end(), compare);
     }
 } // namespace vsgGIS

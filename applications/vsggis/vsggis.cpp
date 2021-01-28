@@ -11,6 +11,8 @@ int main(int argc, char** argv)
 {
     vsg::CommandLine arguments(&argc, argv);
 
+    GDALAllRegister();
+
     std::vector<std::shared_ptr<GDALDataset>> datasets;
 
     for (int ai = 1; ai < argc; ++ai)
@@ -20,14 +22,12 @@ int main(int argc, char** argv)
         datasets.push_back(vsgGIS::openSharedDataSet(filename.c_str(), GA_ReadOnly));
     }
 
-    bool result = vsgGIS::all_equal(datasets, [](const std::shared_ptr<GDALDataset>& lhs, const std::shared_ptr<GDALDataset>& rhs) {
-        return vsgGIS::compatibleDatasetProjectionsTransformAndSizes(*lhs, *rhs);
-    });
+    bool result = vsgGIS::all_equal(datasets.begin(), datasets.end(), vsgGIS::compatibleDatasetProjectionsTransformAndSizes);
 
     if (result)
-        std::cout << "datasets are compatible." << result << std::endl;
+        std::cout << "datasets are compatible." << std::endl;
     else
-        std::cout << "datasets are not compatible." << result << std::endl;
+        std::cout << "datasets are not compatible." << std::endl;
 
     return 0;
 }
