@@ -55,8 +55,10 @@ int main(int argc, char** argv)
 
     GDALDataType dataType = *types.begin();
 
-    int width = datasets.front()->GetRasterXSize();
-    int height =  datasets.front()->GetRasterYSize();
+    auto main_dataset = datasets.front();
+
+    int width = main_dataset->GetRasterXSize();
+    int height =  main_dataset->GetRasterYSize();
 
     std::vector<GDALRasterBand*> rasterBands;
     for(auto& dataset : datasets)
@@ -72,7 +74,7 @@ int main(int argc, char** argv)
             }
             else
             {
-                std::cout<<"Undefined classifciotn on raster band "<<i<<std::endl;
+                std::cout<<"Undefined classification on raster band "<<i<<std::endl;
             }
         }
     }
@@ -90,12 +92,21 @@ int main(int argc, char** argv)
 
     auto image = vsgGIS::createImage2D(width, height, numComponents, dataType, vsg::dvec4(0.0, 0.0, 0.0, 1.0));
 
-
     for(int component = 0; component < static_cast<int>(rasterBands.size()); ++component)
     {
         vsgGIS::copyRasterBandToImage(*rasterBands[component], *image, component);
     }
 
+    if (main_dataset->GetProjectionRef())
+    {
+        image->setValue("ProjectionRef", std::string(main_dataset->GetProjectionRef()));
+    }
+
+    auto transform = vsg::doubleArray::create(6);
+    if (main_dataset->GetGeoTransform( transform->data() ) == CE_None)
+    {
+        image->setObject("GeoTransform", transform);
+    }
 
     vsg::Path output_filename = arguments[argc-1];
     vsg::write(image, output_filename);
