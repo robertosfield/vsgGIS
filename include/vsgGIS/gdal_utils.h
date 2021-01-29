@@ -28,7 +28,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
 
+#include <vsg/core/Array2D.h>
+
 #include <memory>
+#include <set>
 
 namespace vsgGIS
 {
@@ -51,6 +54,9 @@ namespace vsgGIS
     /// return true if two GDALDataset has the same projection, geo transform and dimensions indicating they are perfectly pixel aliged and matched in size.
     extern VSGGIS_DECLSPEC bool compatibleDatasetProjectionsTransformAndSizes(const GDALDataset& lhs, const GDALDataset& rhs);
 
+    /// create a vsg::Image2D of the approrpiate type that maps to specified dimensions and GDALDataType
+    extern VSGGIS_DECLSPEC vsg::ref_ptr<vsg::Data> createImage2D(int width, int height, int numComponents, GDALDataType dataType, vsg::dvec4 def = {0.0, 0.0, 0.0, 1.0});
+
     /// call binary comparison opeators on dereferenced items in specified range.
     template<class Iterator, class BinaryPredicate>
     bool all_equal(Iterator first, Iterator last, BinaryPredicate compare)
@@ -66,4 +72,23 @@ namespace vsgGIS
 
         return true;
     }
+
+    /// collect the set of GDALDataType of all the RansterBand is the specified range of GDALDataset
+    template<class Iterator>
+    std::set<GDALDataType> dataTypes(Iterator first, Iterator last)
+    {
+        std::set<GDALDataType> types;
+        for (Iterator itr = first; itr != last; ++itr)
+        {
+            GDALDataset& dataset = **itr;
+            for (int i = 1; i < dataset.GetRasterCount(); ++i)
+            {
+                GDALRasterBand* band = dataset.GetRasterBand(i);
+                types.insert(band->GetRasterDataType());
+            }
+        }
+        return types;
+    }
+
+
 } // namespace vsgGIS
