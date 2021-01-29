@@ -57,6 +57,10 @@ namespace vsgGIS
     /// create a vsg::Image2D of the approrpiate type that maps to specified dimensions and GDALDataType
     extern VSGGIS_DECLSPEC vsg::ref_ptr<vsg::Data> createImage2D(int width, int height, int numComponents, GDALDataType dataType, vsg::dvec4 def = {0.0, 0.0, 0.0, 1.0});
 
+    /// copy a RasterBand onto a target RGBA component of a vsg::Data.  Dimensions and datatypes must be compatble between RasterBand and vsg::Data. Return true on success, false on failure to copy.
+    extern VSGGIS_DECLSPEC bool copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int component);
+
+
     /// call binary comparison opeators on dereferenced items in specified range.
     template<class Iterator, class BinaryPredicate>
     bool all_equal(Iterator first, Iterator last, BinaryPredicate compare)

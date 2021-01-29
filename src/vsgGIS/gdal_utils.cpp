@@ -159,3 +159,71 @@ vsg::ref_ptr<vsg::Data> vsgGIS::createImage2D(int width, int height, int numComp
 
     return (itr->second)(width, height, def);
 }
+
+bool vsgGIS::copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int component)
+{
+    if (image.width() != static_cast<uint32_t>(band.GetXSize()) || image.height() != static_cast<uint32_t>(band.GetYSize()))
+    {
+        return false;
+    }
+
+    int dataSize = 0;
+    switch(band.GetRasterDataType())
+    {
+        case(GDT_Byte) : dataSize = 1; break;
+        case(GDT_UInt16) :
+        case(GDT_Int16) : dataSize = 2; break;
+        case(GDT_UInt32) :
+        case(GDT_Int32) :
+        case(GDT_Float32) : dataSize = 4; break;
+        case(GDT_Float64) : dataSize = 8; break;
+        default :
+            return false;
+    }
+
+    int offset = dataSize * component;
+    int stride = image.getLayout().stride;
+
+    int nBlockXSize, nBlockYSize;
+    band.GetBlockSize( &nBlockXSize, &nBlockYSize );
+
+    int nXBlocks = (band.GetXSize() + nBlockXSize - 1) / nBlockXSize;
+    int nYBlocks = (band.GetYSize() + nBlockYSize - 1) / nBlockYSize;
+
+    uint8_t* block = new uint8_t[dataSize * nBlockXSize * nBlockYSize];
+
+    for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
+    {
+        for( int iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
+        {
+            int nXValid, nYValid;
+            CPLErr result = band.ReadBlock( iXBlock, iYBlock, block );
+            if (result==0)
+            {
+                // Compute the portion of the block that is valid
+                // for partial edge blocks.
+                band.GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
+
+                for( int iY = 0; iY < nYValid; iY++ )
+                {
+                    uint8_t* dest_ptr = reinterpret_cast<uint8_t*>(image.dataPointer(iXBlock * nBlockXSize + (iYBlock * nBlockYSize + iY)*image.width())) + offset;
+                    uint8_t* source_ptr = block + iY * nBlockXSize * dataSize;
+
+                    for( int iX = 0; iX < nXValid; iX++ )
+                    {
+                        for( int c = 0; c<dataSize; ++c)
+                        {
+                            dest_ptr[c] = *source_ptr;
+                            ++source_ptr;
+                        }
+
+                        dest_ptr += stride;
+                    }
+                }
+            }
+        }
+    }
+    delete [] block;
+
+    return true;
+}
