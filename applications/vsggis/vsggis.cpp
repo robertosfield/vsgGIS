@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
     if (argc<3)
     {
-        std::cout << "usage:  vsggis input.tif [input.tif] [input.tif] [inputfile.tif] otuput.vsgt" << std::endl;
+        std::cout << "usage:\n    vsggis input.tif [input.tif] [input.tif] [inputfile.tif] output.vsgt" << std::endl;
         return 1;
     }
 
@@ -23,8 +23,14 @@ int main(int argc, char** argv)
 
     for (int ai = 1; ai < argc-1; ++ai)
     {
-        std::string filename = arguments[ai];
-        datasets.push_back(vsgGIS::openSharedDataSet(filename.c_str(), GA_ReadOnly));
+        auto dataset = vsgGIS::openSharedDataSet(arguments[ai], GA_ReadOnly);
+        if (dataset) datasets.push_back(dataset);
+    }
+
+    if (datasets.empty())
+    {
+        std::cout<<"No datasets loaded."<<std::endl;
+        return 1;
     }
 
     bool result = vsgGIS::all_equal(datasets.begin(), datasets.end(), vsgGIS::compatibleDatasetProjectionsTransformAndSizes);
