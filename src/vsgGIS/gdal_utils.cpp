@@ -32,7 +32,7 @@ bool vsgGIS::compatibleDatasetProjections(const GDALDataset& lhs, const GDALData
     if (&lhs == &rhs) return true;
 
     const auto lhs_projectionRef = const_cast<GDALDataset&>(lhs).GetProjectionRef();
-    const auto rhs_projectionRef = const_cast<GDALDataset&>(lhs).GetProjectionRef();
+    const auto rhs_projectionRef = const_cast<GDALDataset&>(rhs).GetProjectionRef();
 
     // if pointers are the same then they are compatible
     if (lhs_projectionRef == rhs_projectionRef) return true;
