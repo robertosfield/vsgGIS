@@ -77,6 +77,19 @@ namespace vsgGIS
         return true;
     }
 
+    /// collect the set of GDALDataType of all the RansterBand is the specified GDALDataset
+    inline std::set<GDALDataType> dataTypes(GDALDataset& dataset)
+    {
+        std::set<GDALDataType> types;
+        for (int i = 1; i < dataset.GetRasterCount(); ++i)
+        {
+            GDALRasterBand* band = dataset.GetRasterBand(i);
+            types.insert(band->GetRasterDataType());
+        }
+
+        return types;
+    }
+
     /// collect the set of GDALDataType of all the RansterBand is the specified range of GDALDataset
     template<class Iterator>
     std::set<GDALDataType> dataTypes(Iterator first, Iterator last)
