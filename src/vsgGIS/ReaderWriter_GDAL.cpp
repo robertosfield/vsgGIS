@@ -32,9 +32,10 @@ ReaderWriter_GDAL::ReaderWriter_GDAL()
 {
 }
 
-vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
+vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> /*options*/) const
 {
     GDALAllRegister();
+    CPLPushErrorHandler(CPLQuietErrorHandler);
 
     auto dataset = vsgGIS::openSharedDataSet(filename.c_str(), GA_ReadOnly);
     if (!dataset) return {};
@@ -64,7 +65,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
         }
         else
         {
-            std::cout<<"Undefined classification on raster band "<<i<<std::endl;
+            std::cout<<"ReaderWriter_GDAL::read("<<filename<<") Undefined classification on raster band "<<i<<std::endl;
         }
     }
 
@@ -73,7 +74,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
 
     if (numComponents>4)
     {
-        std::cout<<"Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
+        std::cout<<"ReaderWriter_GDAL::read("<<filename<<")Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
         return {};
     }
 
@@ -97,8 +98,6 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     {
         image->setObject("GeoTransform", transform);
     }
-
-    std::cout<<"GDAL read "<<image<<std::endl;
 
     return image;
 }
