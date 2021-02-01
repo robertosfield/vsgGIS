@@ -70,11 +70,17 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     }
 
     int numComponents = rasterBands.size();
+    if (numComponents==0)
+    {
+        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") failed numComponents = "<<numComponents<<std::endl;
+        return {};
+    }
+
     if (numComponents==3) numComponents = 4;
 
     if (numComponents>4)
     {
-        std::cout<<"ReaderWriter_GDAL::read("<<filename<<")Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
+        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
         return {};
     }
 
