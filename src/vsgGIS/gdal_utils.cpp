@@ -22,6 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </editor-fold> */
 
 #include <vsgGIS/gdal_utils.h>
+#include <vsg/core/Value.h>
 
 #include <cstring>
 
@@ -239,7 +240,7 @@ bool vsgGIS::assignMetaData(GDALDataset& dataset, vsg::Object& object)
         auto equal_pos = line.find('=');
         if (equal_pos==std::string::npos)
         {
-            object.setValue(line, std::string(""));
+            object.setValue(line, std::string());
         }
         else
         {
