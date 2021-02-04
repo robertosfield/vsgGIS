@@ -6,6 +6,66 @@
 #include <thread>
 
 #include <vsgGIS/gdal_utils.h>
+#include <vsgGIS/meta_utils.h>
+
+void processMetaData(GDALDataset& dataset)
+{
+    // https://gdal.org/drivers/raster/jpeg.html
+    char ** metaData = dataset.GetMetadata();
+    if (!metaData) return;
+
+    std::map<std::string, std::string> metaMap;
+
+    for(char** ptr = metaData; *ptr != 0; ++ptr)
+    {
+        std::string line(*ptr);
+        auto equal_pos = line.find('=');
+        if (equal_pos==std::string::npos)
+        {
+            metaMap[line] = "";
+        }
+        else
+        {
+            metaMap[line.substr(0, equal_pos)] = line.substr(equal_pos+1, std::string::npos);
+        }
+    }
+
+    for(auto& [key, value] : metaMap)
+    {
+        std::cout<<key<<" ["<<value<<"]"<<std::endl;
+    }
+
+    auto getAngle = [](const std::string& value) -> double
+    {
+        double degrees;
+        std::stringstream str(value);
+        str >> vsgGIS::dms_in_brackets(degrees);
+        return degrees;
+    };
+
+    auto getDouble = [](const std::string& value) -> double
+    {
+        double v;
+        std::stringstream str(value);
+        str >> vsgGIS::in_brackets(v);
+        return v;
+    };
+
+    if (auto itr = metaMap.find("EXIF_GPSLatitude"); itr != metaMap.end())
+    {
+        std::cout<<"latitude = "<<getAngle(itr->second)<<std::endl;
+    }
+
+    if (auto itr = metaMap.find("EXIF_GPSLongitude"); itr != metaMap.end())
+    {
+        std::cout<<"longitude = "<<getAngle(itr->second)<<std::endl;
+    }
+    if (auto itr = metaMap.find("EXIF_GPSAltitude"); itr != metaMap.end())
+    {
+        std::cout<<"altitude = "<<getDouble(itr->second)<<std::endl;
+    }
+}
+
 
 int main(int argc, char** argv)
 {
@@ -24,7 +84,12 @@ int main(int argc, char** argv)
     for (int ai = 1; ai < argc-1; ++ai)
     {
         auto dataset = vsgGIS::openSharedDataSet(arguments[ai], GA_ReadOnly);
-        if (dataset) datasets.push_back(dataset);
+        if (dataset)
+        {
+            datasets.push_back(dataset);
+
+            processMetaData(*dataset);
+        }
     }
 
     if (datasets.empty())
@@ -107,6 +172,8 @@ int main(int argc, char** argv)
     {
         image->setObject("GeoTransform", transform);
     }
+
+    vsgGIS::assignMetaData(*main_dataset, *image);
 
     vsg::Path output_filename = arguments[argc-1];
     vsg::write(image, output_filename);

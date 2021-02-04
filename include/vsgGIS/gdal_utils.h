@@ -109,5 +109,4 @@ namespace vsgGIS
         return types;
     }
 
-
 } // namespace vsgGIS
