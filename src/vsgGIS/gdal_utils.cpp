@@ -227,3 +227,24 @@ bool vsgGIS::copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int c
 
     return true;
 }
+
+bool vsgGIS::assignMetaData(GDALDataset& dataset, vsg::Object& object)
+{
+    auto metaData = dataset.GetMetadata();
+    if (!metaData) return false;
+
+    for(auto ptr = metaData; *ptr != 0; ++ptr)
+    {
+        std::string line(*ptr);
+        auto equal_pos = line.find('=');
+        if (equal_pos==std::string::npos)
+        {
+            object.setValue(line, std::string(""));
+        }
+        else
+        {
+            object.setValue(line.substr(0, equal_pos), line.substr(equal_pos+1, std::string::npos));
+        }
+    }
+    return true;
+}

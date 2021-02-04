@@ -60,6 +60,8 @@ namespace vsgGIS
     /// copy a RasterBand onto a target RGBA component of a vsg::Data.  Dimensions and datatypes must be compatble between RasterBand and vsg::Data. Return true on success, false on failure to copy.
     extern VSGGIS_DECLSPEC bool copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int component);
 
+    /// assign GDAL MetaData mapping the "key=value" entries to vsg::Object as setValue(key, std::string(value)).
+    extern VSGGIS_DECLSPEC bool assignMetaData(GDALDataset& dataset, vsg::Object& object);
 
     /// call binary comparison opeators on dereferenced items in specified range.
     template<class Iterator, class BinaryPredicate>

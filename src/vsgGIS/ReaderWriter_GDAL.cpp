@@ -40,6 +40,9 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     auto dataset = vsgGIS::openSharedDataSet(filename.c_str(), GA_ReadOnly);
     if (!dataset) return {};
 
+    char ** metaData = dataset->GetMetadata();
+    std::cout<<"ReaderWriter_GDAL::read("<<filename<<") metaData = "<<metaData<<std::endl;
+
 
     auto types = vsgGIS::dataTypes(*dataset);
     if (types.size() > 1)
@@ -93,6 +96,8 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     {
         vsgGIS::copyRasterBandToImage(*rasterBands[component], *image, component);
     }
+
+    vsgGIS::assignMetaData(*dataset, *image);
 
     if (dataset->GetProjectionRef())
     {
