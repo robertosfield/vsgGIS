@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <vsgGIS/ReaderWriter_GDAL.h>
 #include <vsgGIS/gdal_utils.h>
 
+#include <cstring>
 #include <iostream>
 
 using namespace vsgGIS;
@@ -104,7 +105,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
 
     vsgGIS::assignMetaData(*dataset, *image);
 
-    if (dataset->GetProjectionRef())
+    if (dataset->GetProjectionRef() && std::strlen(dataset->GetProjectionRef())>0)
     {
         image->setValue("ProjectionRef", std::string(dataset->GetProjectionRef()));
     }
