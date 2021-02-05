@@ -35,6 +35,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace vsgGIS
 {
+    /// call GDALAllRegister() etc. if it hasn't already been called. Return true if this call to initGDAL() invoked GDAL setup, or false if it has previously been done.
+    extern VSGGIS_DECLSPEC bool initGDAL();
 
     /// Call GDALOpen(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
     inline std::shared_ptr<GDALDataset> openDataSet(const char* filename, GDALAccess access)

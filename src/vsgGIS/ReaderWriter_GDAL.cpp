@@ -34,11 +34,10 @@ ReaderWriter_GDAL::ReaderWriter_GDAL()
 
 vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
 {
-    GDALAllRegister();
-    CPLPushErrorHandler(CPLQuietErrorHandler);
-
     vsg::Path filenameToUse = vsg::findFile(filename, options);
     if (filenameToUse.empty()) return {};
+
+    vsgGIS::initGDAL();
 
     auto dataset = vsgGIS::openSharedDataSet(filenameToUse.c_str(), GA_ReadOnly);
     if (!dataset)

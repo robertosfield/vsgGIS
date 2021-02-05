@@ -25,8 +25,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <vsg/core/Value.h>
 
 #include <cstring>
+#include <iostream>
 
 using namespace vsgGIS;
+
+static bool s_GDAL_initialized = false;
+bool vsgGIS::initGDAL()
+{
+    if (!s_GDAL_initialized)
+    {
+        s_GDAL_initialized = true;
+        GDALAllRegister();
+        CPLPushErrorHandler(CPLQuietErrorHandler);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 bool vsgGIS::compatibleDatasetProjections(const GDALDataset& lhs, const GDALDataset& rhs)
 {

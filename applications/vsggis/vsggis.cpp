@@ -71,8 +71,6 @@ int main(int argc, char** argv)
 {
     vsg::CommandLine arguments(&argc, argv);
 
-    GDALAllRegister();
-
     if (argc<3)
     {
         std::cout << "usage:\n    vsggis input.tif [input.tif] [input.tif] [inputfile.tif] output.vsgt" << std::endl;
