@@ -32,13 +32,19 @@ ReaderWriter_GDAL::ReaderWriter_GDAL()
 {
 }
 
-vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> /*options*/) const
+vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
 {
     GDALAllRegister();
     CPLPushErrorHandler(CPLQuietErrorHandler);
 
-    auto dataset = vsgGIS::openSharedDataSet(filename.c_str(), GA_ReadOnly);
-    if (!dataset) return {};
+    vsg::Path filenameToUse = vsg::findFile(filename, options);
+    if (filenameToUse.empty()) return {};
+
+    auto dataset = vsgGIS::openSharedDataSet(filenameToUse.c_str(), GA_ReadOnly);
+    if (!dataset)
+    {
+        return {};
+    }
 
     char ** metaData = dataset->GetMetadata();
     std::cout<<"ReaderWriter_GDAL::read("<<filename<<") metaData = "<<metaData<<std::endl;
