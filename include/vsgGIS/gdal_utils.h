@@ -85,7 +85,7 @@ namespace vsgGIS
     inline std::set<GDALDataType> dataTypes(GDALDataset& dataset)
     {
         std::set<GDALDataType> types;
-        for (int i = 1; i < dataset.GetRasterCount(); ++i)
+        for (int i = 1; i <= dataset.GetRasterCount(); ++i)
         {
             GDALRasterBand* band = dataset.GetRasterBand(i);
             types.insert(band->GetRasterDataType());
@@ -102,7 +102,7 @@ namespace vsgGIS
         for (Iterator itr = first; itr != last; ++itr)
         {
             GDALDataset& dataset = **itr;
-            for (int i = 1; i < dataset.GetRasterCount(); ++i)
+            for (int i = 1; i <= dataset.GetRasterCount(); ++i)
             {
                 GDALRasterBand* band = dataset.GetRasterBand(i);
                 types.insert(band->GetRasterDataType());
