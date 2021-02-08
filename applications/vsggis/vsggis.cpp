@@ -69,6 +69,8 @@ void processMetaData(GDALDataset& dataset)
 
 int main(int argc, char** argv)
 {
+    vsgGIS::initGDAL();
+
     vsg::CommandLine arguments(&argc, argv);
 
     if (argc<3)

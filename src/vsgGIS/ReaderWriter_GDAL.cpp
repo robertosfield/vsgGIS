@@ -60,6 +60,14 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
         }
         return {};
     }
+
+    if (types.empty())
+    {
+        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") types set empty." << std::endl;
+
+        return {};
+    }
+
     GDALDataType dataType = *types.begin();
 
     std::vector<GDALRasterBand*> rasterBands;
@@ -97,6 +105,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     int height =  dataset->GetRasterYSize();
 
     auto image = vsgGIS::createImage2D(width, height, numComponents, dataType, vsg::dvec4(0.0, 0.0, 0.0, 1.0));
+    if (!image) return {};
 
     for(int component = 0; component < static_cast<int>(rasterBands.size()); ++component)
     {
