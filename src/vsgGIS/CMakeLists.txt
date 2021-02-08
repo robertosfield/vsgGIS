@@ -13,6 +13,7 @@ set(HEADERS
 
 set(SOURCES
     gdal_utils.cpp
+    meta_utils.cpp
     ReaderWriter_GDAL.cpp
 )
 

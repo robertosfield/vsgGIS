@@ -23,12 +23,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
 
-#include <vsgGIS/Export.h>
+#include <vsgGIS/gdal_utils.h>
 
 #include <sstream>
 
 namespace vsgGIS
 {
+
+    /// get the latitude, longitude and altitude values from the GDALDataSet's EXIF_GPSLatitude, EXIF_GPSLongitude and EXIF_GPSAltitude meta data fields, return true on success,
+    extern VSGGIS_DECLSPEC bool getEXIF_LatitudeLongitudeAlititude(GDALDataset& dataset, double& latitude, double& longitude, double& altitude);
+
+    /// get the latitude, longitude and altitude values from the vsg::Object's EXIF_GPSLatitude, EXIF_GPSLongitude and EXIF_GPSAltitude meta data fields, return true on success,
+    extern VSGGIS_DECLSPEC bool getEXIF_LatitudeLongitudeAlititude(const vsg::Object& object, double& latitude, double& longitude, double& altitude);
 
     template<typename T>
     struct in_brackets
@@ -92,7 +98,7 @@ namespace vsgGIS
         double& value;
     };
 
-    std::istream& operator>>(std::istream& input, dms_in_brackets field)
+    inline std::istream& operator>>(std::istream& input, dms_in_brackets field)
     {
         double degrees = 0.0, minutes = 0.0, seconds = 0.0;
         input >> in_brackets(degrees) >> in_brackets(minutes) >> in_brackets(seconds);
