@@ -46,10 +46,6 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
         return {};
     }
 
-    char ** metaData = dataset->GetMetadata();
-    std::cout<<"ReaderWriter_GDAL::read("<<filename<<") metaData = "<<metaData<<std::endl;
-
-
     auto types = vsgGIS::dataTypes(*dataset);
     if (types.size() > 1)
     {
