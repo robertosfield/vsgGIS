@@ -35,6 +35,10 @@ ReaderWriter_GDAL::ReaderWriter_GDAL()
 
 vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
 {
+    // GDAL tries to load all datatypes so up front catch VSG and OSG native formats.
+    vsg::Path ext = vsg::lowerCaseFileExtension(filename);
+    if (ext == "vsgb" || ext == "vsgt" || ext == "osgb" || ext == "osgt" || ext == "osg") return {};
+
     vsg::Path filenameToUse = vsg::findFile(filename, options);
     if (filenameToUse.empty()) return {};
 
