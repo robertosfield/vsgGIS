@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
 
-#include <vsgGIS/ReaderWriter_GDAL.h>
+#include <vsgGIS/GDAL.h>
 #include <vsgGIS/gdal_utils.h>
 
 #include <cstring>
@@ -29,11 +29,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using namespace vsgGIS;
 
-ReaderWriter_GDAL::ReaderWriter_GDAL()
+GDAL::GDAL()
 {
 }
 
-vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
+vsg::ref_ptr<vsg::Object> GDAL::read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const
 {
     // GDAL tries to load all datatypes so up front catch VSG and OSG native formats.
     vsg::Path ext = vsg::lowerCaseFileExtension(filename);
@@ -53,7 +53,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
     auto types = vsgGIS::dataTypes(*dataset);
     if (types.size() > 1)
     {
-        std::cout << "ReaderWriter_GDAL::read("<<filename<<") multiple input data types not suported." << std::endl;
+        std::cout << "GDAL::read("<<filename<<") multiple input data types not suported." << std::endl;
         for (auto& type : types)
         {
             std::cout << "   GDALDataType " << GDALGetDataTypeName(type) << std::endl;
@@ -63,7 +63,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
 
     if (types.empty())
     {
-        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") types set empty." << std::endl;
+        std::cout<<"GDAL::read("<<filename<<") types set empty." << std::endl;
 
         return {};
     }
@@ -82,14 +82,14 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
         }
         else
         {
-            std::cout<<"ReaderWriter_GDAL::read("<<filename<<") Undefined classification on raster band "<<i<<std::endl;
+            std::cout<<"GDAL::read("<<filename<<") Undefined classification on raster band "<<i<<std::endl;
         }
     }
 
     int numComponents = rasterBands.size();
     if (numComponents==0)
     {
-        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") failed numComponents = "<<numComponents<<std::endl;
+        std::cout<<"GDAL::read("<<filename<<") failed numComponents = "<<numComponents<<std::endl;
         return {};
     }
 
@@ -97,7 +97,7 @@ vsg::ref_ptr<vsg::Object> ReaderWriter_GDAL::read(const vsg::Path& filename, vsg
 
     if (numComponents>4)
     {
-        std::cout<<"ReaderWriter_GDAL::read("<<filename<<") Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
+        std::cout<<"GDAL::read("<<filename<<") Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
         return {};
     }
 

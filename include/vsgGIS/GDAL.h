@@ -28,13 +28,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace vsgGIS
 {
-    class VSGGIS_DECLSPEC ReaderWriter_GDAL : public vsg::Inherit<vsg::ReaderWriter, ReaderWriter_GDAL>
+    class VSGGIS_DECLSPEC GDAL : public vsg::Inherit<vsg::ReaderWriter, GDAL>
     {
     public:
-        ReaderWriter_GDAL();
+        GDAL();
 
         vsg::ref_ptr<vsg::Object> read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options) const override;
     };
 } // namespace vsgGIS
 
-EVSG_type_name(vsgGIS::ReaderWriter_GDAL);
+EVSG_type_name(vsgGIS::GDAL);
