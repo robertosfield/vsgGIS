@@ -8,15 +8,12 @@ SET(HEADER_PATH ${CMAKE_SOURCE_DIR}/include/vsgGIS)
 set(HEADERS
     ${HEADER_PATH}/gdal_utils.h
     ${HEADER_PATH}/meta_utils.h
-    ${HEADER_PATH}/ReaderWriter_GDAL.h
  )
 
 set(SOURCES
     gdal_utils.cpp
     meta_utils.cpp
-    ReaderWriter_GDAL.cpp
 )
-
 
 add_library(vsgGIS ${HEADERS} ${SOURCES})
 
