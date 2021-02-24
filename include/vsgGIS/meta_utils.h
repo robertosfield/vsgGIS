@@ -39,7 +39,8 @@ namespace vsgGIS
     template<typename T>
     struct in_brackets
     {
-        in_brackets(T& v) : value(v) {}
+        in_brackets(T& v) :
+            value(v) {}
         T& value;
     };
 
@@ -57,9 +58,9 @@ namespace vsgGIS
 
             if constexpr (std::is_same_v<T, std::string>)
             {
-                if (!field.value.empty() && field.value[field.value.size()-1] == ')')
+                if (!field.value.empty() && field.value[field.value.size() - 1] == ')')
                 {
-                    field.value.erase(field.value.size()-1);
+                    field.value.erase(field.value.size() - 1);
                     return input;
                 }
                 else
@@ -94,7 +95,8 @@ namespace vsgGIS
     ///    str >> dms_in_brackets(latitude);
     struct dms_in_brackets
     {
-        dms_in_brackets(double& angle) : value(angle) {}
+        dms_in_brackets(double& angle) :
+            value(angle) {}
         double& value;
     };
 
@@ -102,7 +104,7 @@ namespace vsgGIS
     {
         double degrees = 0.0, minutes = 0.0, seconds = 0.0;
         input >> in_brackets(degrees) >> in_brackets(minutes) >> in_brackets(seconds);
-        field.value = degrees + (minutes + seconds/60.0)/60.0;
+        field.value = degrees + (minutes + seconds / 60.0) / 60.0;
         return input;
     }
 

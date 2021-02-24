@@ -8,14 +8,13 @@
 #include <vsgGIS/gdal_utils.h>
 #include <vsgGIS/meta_utils.h>
 
-
 int main(int argc, char** argv)
 {
     vsgGIS::initGDAL();
 
     vsg::CommandLine arguments(&argc, argv);
 
-    if (argc<3)
+    if (argc < 3)
     {
         std::cout << "usage:\n    vsggis input.tif [input.tif] [input.tif] [inputfile.tif] output.vsgt" << std::endl;
         return 1;
@@ -23,7 +22,7 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<GDALDataset>> datasets;
 
-    for (int ai = 1; ai < argc-1; ++ai)
+    for (int ai = 1; ai < argc - 1; ++ai)
     {
         auto dataset = vsgGIS::openSharedDataSet(arguments[ai], GA_ReadOnly);
         if (dataset)
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
 
     if (datasets.empty())
     {
-        std::cout<<"No datasets loaded."<<std::endl;
+        std::cout << "No datasets loaded." << std::endl;
         return 1;
     }
 
@@ -63,12 +62,12 @@ int main(int argc, char** argv)
     auto main_dataset = datasets.front();
 
     int width = main_dataset->GetRasterXSize();
-    int height =  main_dataset->GetRasterYSize();
+    int height = main_dataset->GetRasterYSize();
 
     std::vector<GDALRasterBand*> rasterBands;
-    for(auto& dataset : datasets)
+    for (auto& dataset : datasets)
     {
-        for(int i = 1; i <= dataset->GetRasterCount(); ++i)
+        for (int i = 1; i <= dataset->GetRasterCount(); ++i)
         {
             GDALRasterBand* band = dataset->GetRasterBand(i);
             GDALColorInterp classification = band->GetColorInterpretation();
@@ -79,25 +78,25 @@ int main(int argc, char** argv)
             }
             else
             {
-                std::cout<<"Undefined classification on raster band "<<i<<std::endl;
+                std::cout << "Undefined classification on raster band " << i << std::endl;
             }
         }
     }
 
-    std::cout<<"rasterBands.size() = "<<rasterBands.size()<<std::endl;
+    std::cout << "rasterBands.size() = " << rasterBands.size() << std::endl;
 
     int numComponents = rasterBands.size();
-    if (numComponents==3) numComponents = 4;
+    if (numComponents == 3) numComponents = 4;
 
-    if (numComponents>4)
+    if (numComponents > 4)
     {
-        std::cout<<"Too many raster bands to merge into a single output, maximum of 4 raster bands supported."<<std::endl;
+        std::cout << "Too many raster bands to merge into a single output, maximum of 4 raster bands supported." << std::endl;
         return 1;
     }
 
     auto image = vsgGIS::createImage2D(width, height, numComponents, dataType, vsg::dvec4(0.0, 0.0, 0.0, 1.0));
 
-    for(int component = 0; component < static_cast<int>(rasterBands.size()); ++component)
+    for (int component = 0; component < static_cast<int>(rasterBands.size()); ++component)
     {
         vsgGIS::copyRasterBandToImage(*rasterBands[component], *image, component);
     }
@@ -108,17 +107,17 @@ int main(int argc, char** argv)
     }
 
     auto transform = vsg::doubleArray::create(6);
-    if (main_dataset->GetGeoTransform( transform->data() ) == CE_None)
+    if (main_dataset->GetGeoTransform(transform->data()) == CE_None)
     {
         image->setObject("GeoTransform", transform);
     }
 
     vsgGIS::assignMetaData(*main_dataset, *image);
 
-    vsg::Path output_filename = arguments[argc-1];
+    vsg::Path output_filename = arguments[argc - 1];
     vsg::write(image, output_filename);
 
-    std::cout<<"Written output to "<<output_filename<<std::endl;
+    std::cout << "Written output to " << output_filename << std::endl;
 
     return 0;
 }

@@ -21,8 +21,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
 
-#include <vsgGIS/gdal_utils.h>
 #include <vsg/core/Value.h>
+#include <vsgGIS/gdal_utils.h>
 
 #include <cstring>
 #include <iostream>
@@ -102,8 +102,10 @@ T default_value(double scale)
 {
     if (std::numeric_limits<T>::is_integer)
     {
-        if (scale<0.0) return std::numeric_limits<T>::min();
-        else if (scale>0.0) return std::numeric_limits<T>::max();
+        if (scale < 0.0)
+            return std::numeric_limits<T>::min();
+        else if (scale > 0.0)
+            return std::numeric_limits<T>::max();
         return static_cast<T>(0);
     }
     else
@@ -130,14 +132,13 @@ vsg::t_vec4<T> default_vec4(const vsg::dvec4& value)
     return vsg::t_vec4<T>(default_value<T>(value[0]), default_value<T>(value[1]), default_value<T>(value[2]), default_value<T>(value[4]));
 }
 
-
 vsg::ref_ptr<vsg::Data> vsgGIS::createImage2D(int width, int height, int numComponents, GDALDataType dataType, vsg::dvec4 def)
 {
     using TypeCompontents = std::pair<GDALDataType, int>;
     using CreateFunction = std::function<vsg::ref_ptr<vsg::Data>(uint32_t w, uint32_t h, vsg::dvec4 def)>;
 
     std::map<TypeCompontents, CreateFunction> createMap;
-    createMap[TypeCompontents(GDT_Byte, 1)] = [](uint32_t w, uint32_t h, vsg::dvec4 d) { return vsg::ubyteArray2D::create(w, h, default_value<uint8_t>(d[0]), vsg::Data::Layout{VK_FORMAT_R8_UNORM}) ; };
+    createMap[TypeCompontents(GDT_Byte, 1)] = [](uint32_t w, uint32_t h, vsg::dvec4 d) { return vsg::ubyteArray2D::create(w, h, default_value<uint8_t>(d[0]), vsg::Data::Layout{VK_FORMAT_R8_UNORM}); };
     createMap[TypeCompontents(GDT_UInt16, 1)] = [](uint32_t w, uint32_t h, vsg::dvec4 d) { return vsg::ushortArray2D::create(w, h, default_value<uint16_t>(d[0]), vsg::Data::Layout{VK_FORMAT_R16_UNORM}); };
     createMap[TypeCompontents(GDT_Int16, 1)] = [](uint32_t w, uint32_t h, vsg::dvec4 d) { return vsg::shortArray2D::create(w, h, default_value<int16_t>(d[0]), vsg::Data::Layout{VK_FORMAT_R16_SNORM}); };
     createMap[TypeCompontents(GDT_UInt32, 1)] = [](uint32_t w, uint32_t h, vsg::dvec4 d) { return vsg::uintArray2D::create(w, h, default_value<uint32_t>(d[0]), vsg::Data::Layout{VK_FORMAT_R32_UINT}); };
@@ -186,50 +187,50 @@ bool vsgGIS::copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int c
     }
 
     int dataSize = 0;
-    switch(band.GetRasterDataType())
+    switch (band.GetRasterDataType())
     {
-        case(GDT_Byte) : dataSize = 1; break;
-        case(GDT_UInt16) :
-        case(GDT_Int16) : dataSize = 2; break;
-        case(GDT_UInt32) :
-        case(GDT_Int32) :
-        case(GDT_Float32) : dataSize = 4; break;
-        case(GDT_Float64) : dataSize = 8; break;
-        default :
-            return false;
+    case (GDT_Byte): dataSize = 1; break;
+    case (GDT_UInt16):
+    case (GDT_Int16): dataSize = 2; break;
+    case (GDT_UInt32):
+    case (GDT_Int32):
+    case (GDT_Float32): dataSize = 4; break;
+    case (GDT_Float64): dataSize = 8; break;
+    default:
+        return false;
     }
 
     int offset = dataSize * component;
     int stride = image.getLayout().stride;
 
     int nBlockXSize, nBlockYSize;
-    band.GetBlockSize( &nBlockXSize, &nBlockYSize );
+    band.GetBlockSize(&nBlockXSize, &nBlockYSize);
 
     int nXBlocks = (band.GetXSize() + nBlockXSize - 1) / nBlockXSize;
     int nYBlocks = (band.GetYSize() + nBlockYSize - 1) / nBlockYSize;
 
     uint8_t* block = new uint8_t[dataSize * nBlockXSize * nBlockYSize];
 
-    for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
+    for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
     {
-        for( int iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
+        for (int iXBlock = 0; iXBlock < nXBlocks; iXBlock++)
         {
             int nXValid, nYValid;
-            CPLErr result = band.ReadBlock( iXBlock, iYBlock, block );
-            if (result==0)
+            CPLErr result = band.ReadBlock(iXBlock, iYBlock, block);
+            if (result == 0)
             {
                 // Compute the portion of the block that is valid
                 // for partial edge blocks.
                 band.GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
 
-                for( int iY = 0; iY < nYValid; iY++ )
+                for (int iY = 0; iY < nYValid; iY++)
                 {
-                    uint8_t* dest_ptr = reinterpret_cast<uint8_t*>(image.dataPointer(iXBlock * nBlockXSize + (iYBlock * nBlockYSize + iY)*image.width())) + offset;
+                    uint8_t* dest_ptr = reinterpret_cast<uint8_t*>(image.dataPointer(iXBlock * nBlockXSize + (iYBlock * nBlockYSize + iY) * image.width())) + offset;
                     uint8_t* source_ptr = block + iY * nBlockXSize * dataSize;
 
-                    for( int iX = 0; iX < nXValid; iX++ )
+                    for (int iX = 0; iX < nXValid; iX++)
                     {
-                        for( int c = 0; c<dataSize; ++c)
+                        for (int c = 0; c < dataSize; ++c)
                         {
                             dest_ptr[c] = *source_ptr;
                             ++source_ptr;
@@ -241,7 +242,7 @@ bool vsgGIS::copyRasterBandToImage(GDALRasterBand& band, vsg::Data& image, int c
             }
         }
     }
-    delete [] block;
+    delete[] block;
 
     return true;
 }
@@ -251,17 +252,17 @@ bool vsgGIS::assignMetaData(GDALDataset& dataset, vsg::Object& object)
     auto metaData = dataset.GetMetadata();
     if (!metaData) return false;
 
-    for(auto ptr = metaData; *ptr != 0; ++ptr)
+    for (auto ptr = metaData; *ptr != 0; ++ptr)
     {
         std::string line(*ptr);
         auto equal_pos = line.find('=');
-        if (equal_pos==std::string::npos)
+        if (equal_pos == std::string::npos)
         {
             object.setValue(line, std::string());
         }
         else
         {
-            object.setValue(line.substr(0, equal_pos), line.substr(equal_pos+1, std::string::npos));
+            object.setValue(line.substr(0, equal_pos), line.substr(equal_pos + 1, std::string::npos));
         }
     }
     return true;
