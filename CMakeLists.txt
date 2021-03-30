@@ -74,9 +74,6 @@ find_package(Vulkan REQUIRED)
 find_package(vsg REQUIRED)
 find_package(GDAL REQUIRED)
 
-# find the optional vsgXchange that can be used for reading and range of image and 3d model formats and shader compilation
-find_package(vsgXchange QUIET)
-
 
 add_custom_target(clobber
     COMMAND git clean -d -f -x
@@ -97,6 +94,6 @@ if (CLANGFORMAT)
     )
 endif()
 
-# source directory for main vsgXchange library
+# source directories for vsgGIS library
 add_subdirectory(src)
 add_subdirectory(applications)
