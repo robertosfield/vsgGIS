@@ -66,7 +66,7 @@ public:
     void write(vsg::Output& output) const override;
 
     // initialize data structures
-    void init();
+    void init(vsg::ref_ptr<const vsg::Options> options);
 
     // read the tile
     vsg::ref_ptr<vsg::Object> read(const vsg::Path& filename, vsg::ref_ptr<const vsg::Options> options = {}) const override;
@@ -93,9 +93,10 @@ protected:
     vsg::ref_ptr<vsg::DescriptorSetLayout> descriptorSetLayout;
     vsg::ref_ptr<vsg::PipelineLayout> pipelineLayout;
     vsg::ref_ptr<vsg::Sampler> sampler;
+    vsg::ref_ptr<vsg::GraphicsPipeline> graphicsPipeline;
 };
 
-}
+} // vsgGIS
 
 // Provide the means for the vsg::type_name<class> to get the human readable class name.
 EVSG_type_name(vsgGIS::TileDatabaseSettings);
