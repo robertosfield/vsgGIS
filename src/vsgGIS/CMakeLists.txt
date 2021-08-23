@@ -42,12 +42,7 @@ target_link_libraries(vsgGIS
         ${EXTRA_LIBRARIES}
 )
 
-install(TARGETS vsgGIS EXPORT vsgGISTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-)
+install(TARGETS vsgGIS ${INSTALL_TARGETS_DEFAULT_FLAGS})
 
 if (BUILD_SHARED_LIBS)
     target_compile_definitions(vsgGIS INTERFACE VSGGIS_SHARED_LIBRARY)
@@ -60,7 +55,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/vsgGIS DESTINATION include)
 install(EXPORT vsgGISTargets
     FILE vsgGISTargets.cmake
     NAMESPACE vsgGIS::
-    DESTINATION lib/cmake/vsgGIS
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vsgGIS
 )
 
 include(CMakePackageConfigHelpers)
@@ -72,7 +67,7 @@ write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVer
 configure_file("${CMAKE_SOURCE_DIR}/src/vsgGIS/vsgGISConfig.cmake.in" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" @ONLY)
 
 install(FILES "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
-    DESTINATION lib/cmake/vsgGIS
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vsgGIS
 )
 
 # ]==]
