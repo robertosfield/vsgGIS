@@ -30,6 +30,15 @@ add_target_clang_format(
         src/vsgGIS/*.cpp
 )
 add_target_clobber()
+add_target_cppcheck(
+    FILES
+        ${CMAKE_SOURCE_DIR}/src/vsgGIS/*.cpp
+        ${CMAKE_SOURCE_DIR}/include/vsgGIS/*.h
+    )
+add_target_docs(
+    FILES
+        include
+)
 add_target_uninstall()
 
 add_option_maintainer(
@@ -40,3 +49,5 @@ add_option_maintainer(
 # source directories for vsgGIS library
 add_subdirectory(src)
 add_subdirectory(applications)
+
+add_feature_summary()
