@@ -21,27 +21,27 @@ find_package(Vulkan REQUIRED)
 find_package(vsg REQUIRED)
 find_package(GDAL REQUIRED)
 
-setup_build_vars()
-setup_dir_vars()
+vsg_setup_build_vars()
+vsg_setup_dir_vars()
 
-add_target_clang_format(
+vsg_add_target_clang_format(
     FILES
         include/vsgGIS/*.h
         src/vsgGIS/*.cpp
 )
-add_target_clobber()
-add_target_cppcheck(
+vsg_add_target_clobber()
+vsg_add_target_cppcheck(
     FILES
         ${CMAKE_SOURCE_DIR}/src/vsgGIS/*.cpp
         ${CMAKE_SOURCE_DIR}/include/vsgGIS/*.h
     )
-add_target_docs(
+vsg_add_target_docs(
     FILES
         include
 )
-add_target_uninstall()
+vsg_add_target_uninstall()
 
-add_option_maintainer(
+vsg_add_option_maintainer(
     PREFIX vsgGIS
     RCLEVEL VSGGIS_RELEASE_CANDIDATE
 )
@@ -50,4 +50,4 @@ add_option_maintainer(
 add_subdirectory(src)
 add_subdirectory(applications)
 
-add_feature_summary()
+vsg_add_feature_summary()
