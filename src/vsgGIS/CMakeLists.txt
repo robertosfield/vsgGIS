@@ -60,7 +60,6 @@ install(EXPORT vsgGISTargets
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
-    VERSION ${VSGGIS_MAJOR_VERSION}.${VSGGIS_MINOR_VERSION}.${VSGGIS_PATCH_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
