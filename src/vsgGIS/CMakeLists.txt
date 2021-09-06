@@ -51,23 +51,7 @@ endif()
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/vsgGIS DESTINATION include)
 
-# [==[
-install(EXPORT vsgGISTargets
-    FILE vsgGISTargets.cmake
-    NAMESPACE vsgGIS::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vsgGIS
+vsg_add_cmake_support_files(
+    CONFIG_TEMPLATE
+        vsgGISConfig.cmake.in
 )
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
-    VERSION ${VSGGIS_MAJOR_VERSION}.${VSGGIS_MINOR_VERSION}.${VSGGIS_PATCH_VERSION}
-    COMPATIBILITY SameMajorVersion
-)
-
-configure_file("${CMAKE_SOURCE_DIR}/src/vsgGIS/vsgGISConfig.cmake.in" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" @ONLY)
-
-install(FILES "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfig.cmake" "${CMAKE_BINARY_DIR}/src/vsgGIS/vsgGISConfigVersion.cmake"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/vsgGIS
-)
-
-# ]==]
