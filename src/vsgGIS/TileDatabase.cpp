@@ -12,7 +12,6 @@ bool vsgGIS::init()
     return true;
 }
 
-
 // Register the TileDatabase class with vsg::ObjectFactory::instance() so they can be used for creating objects during reading.
 vsg::RegisterWithObjectFactoryProxy<vsgGIS::TileDatabaseSettings> s_Register_TileDatabaseSettings;
 vsg::RegisterWithObjectFactoryProxy<vsgGIS::TileDatabase> s_Register_TileDatabase;
@@ -289,9 +288,9 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
 
     auto pathObjects = vsg::read(tiles, options);
 
-    if (pathObjects.size()==4)
+    if (pathObjects.size() == 4)
     {
-        for(auto& [tilePath, object] : pathObjects)
+        for (auto& [tilePath, object] : pathObjects)
         {
             auto& tileID = pathToTileID[tilePath];
             auto imageTile = object.cast<vsg::Data>();
@@ -311,7 +310,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
                         auto plod = vsg::PagedLOD::create();
                         plod->bound = bound;
                         plod->children[0] = vsg::PagedLOD::Child{settings->lodTransitionScreenHeightRatio, {}}; // external child visible when it's bound occupies more than 1/4 of the height of the window
-                        plod->children[1] = vsg::PagedLOD::Child{0.0, tile}; // visible always
+                        plod->children[1] = vsg::PagedLOD::Child{0.0, tile};                                    // visible always
                         plod->filename = vsg::make_string(tileID.local_x, " ", tileID.local_y, " ", local_lod, ".tile");
                         plod->options = options;
 
@@ -334,7 +333,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
 
     vsg::time_point end_read = vsg::clock::now();
 
-    double time_to_read_tile =  std::chrono::duration<float, std::chrono::milliseconds::period>(end_read - start_read).count();
+    double time_to_read_tile = std::chrono::duration<float, std::chrono::milliseconds::period>(end_read - start_read).count();
 
     {
         std::scoped_lock<std::mutex> lock(statsMutex);
