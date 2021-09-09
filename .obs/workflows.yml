@@ -1,0 +1,6 @@
+workflow:
+  steps:
+    - branch_package:
+        source_project: home:rhabacker:branches:games
+        source_package: vsgGIS
+
