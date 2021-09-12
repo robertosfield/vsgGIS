@@ -1,0 +1,155 @@
+name: CI
+on:
+  push:
+  pull_request:
+env:
+  VulkanSDKVersion: 1.2.162.1
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    env:
+      BuildDocEnabled: ${{github.event_name == 'push' && github.ref == 'refs/heads/master'}}
+      VULKAN_SDK: $GITHUB_WORKSPACE/../$VulkanSDKVersion/x86_64
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: main
+    - name: Cache
+      id: cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: ${{env.VULKAN_SDK}}
+        key: VulkanSdk${{env.VulkanSDKVersion}}ExtractedLinux
+    - name: Download & Extract Vulkan SDK
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        wget --no-cookies -O ../vulkansdk-linux-x86_64-${{env.VulkanSDKVersion}}.tar.gz https://sdk.lunarg.com/sdk/download/${{env.VulkanSDKVersion}}/linux/vulkansdk-linux-x86_64-${{env.VulkanSDKVersion}}.tar.gz?u=
+        tar -zxf ../vulkansdk-linux-x86_64-${{env.VulkanSDKVersion}}.tar.gz -C ../
+    - name: Install Deps
+      run: |
+        sudo apt-get install gdal-bin libgdal-dev
+    - name: VSG Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: vsg-dev/VulkanSceneGraph
+        path: vsg
+    - name: VSG Build and Install
+      run: |
+        cd vsg
+        cmake -D Vulkan_INCLUDE_DIR="${{env.VULKAN_SDK}}/include" \
+          -D Vulkan_LIBRARY="${{env.VULKAN_SDK}}/lib/libvulkan.so" .
+        make -j 2
+        sudo make install
+    - name: vsgGIS Build and Install
+      run: |
+        cd main
+        cmake -D Vulkan_INCLUDE_DIR="${{env.VULKAN_SDK}}/include" \
+          -D Vulkan_LIBRARY="${{env.VULKAN_SDK}}/lib/libvulkan.so" .
+        make -j 2
+        sudo make install
+        
+  windows-build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: main
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: "latest"
+        activate-environment: vsgGIS
+    - name: Set env
+      id: env
+      run: echo "::set-output name=VULKAN_SDK::C:\VulkanSDK\${{env.VulkanSDKVersion}}"
+    - name: Cache
+      id: cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: ${{steps.env.outputs.VULKAN_SDK}}
+        key: VulkanSdk${{env.VulkanSDKVersion}}WindowsExtracted2
+    - name: Download & Install Vulkan SDK
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{env.VulkanSDKVersion}}/windows/VulkanSDK-${{env.VulkanSDKVersion}}-Installer.exe?u= -OutFile ../vulkan-sdk-${{env.VulkanSDKVersion}}.exe
+        $installer = Start-Process -FilePath ../vulkan-sdk-${{env.VulkanSDKVersion}}.exe -Wait -PassThru -ArgumentList @("/S");
+        $installer.WaitForExit();
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install GDAL
+      shell: powershell
+      run: |
+        conda install -c conda-forge gdal
+    - name: VSG Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: vsg-dev/VulkanSceneGraph
+        path: vsg
+    - name: VSG CMake Configure MSBuild Build and Install
+      run: |
+        cd vsg
+        cmake . -G "Visual Studio 16 2019" -A x64
+        MSBuild.exe ALL_BUILD.vcxproj -p:Configuration=Release
+        MSBuild.exe INSTALL.vcxproj -p:Configuration=Release
+      env:
+        VULKAN_SDK: ${{steps.env.outputs.VULKAN_SDK}}
+    - name: vsgGIS CMake Configuration MSBuild Build and Install
+      run: |
+        cd main
+        cmake . -G "Visual Studio 16 2019" -A x64 -Dvsg_DIR="C:\Program Files\vsg\lib\cmake\vsg" -Dvsg_glslang_DIR="C:\Program Files\vsg\lib\cmake\vsg_glslang"
+        MSBuild.exe ALL_BUILD.vcxproj -p:Configuration=Release
+        MSBuild.exe INSTALL.vcxproj -p:Configuration=Release
+      env:
+        VULKAN_SDK: ${{steps.env.outputs.VULKAN_SDK}}
+        
+  windows-dll-build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: main
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: "latest"
+        activate-environment: vsgGIS
+    - name: Set env
+      id: env
+      run: echo "::set-output name=VULKAN_SDK::C:\VulkanSDK\${{env.VulkanSDKVersion}}"
+    - name: Cache
+      id: cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: ${{steps.env.outputs.VULKAN_SDK}}
+        key: VulkanSdk${{env.VulkanSDKVersion}}WindowsExtracted2
+    - name: Download & Install Vulkan SDK
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        Invoke-WebRequest -Uri https://sdk.lunarg.com/sdk/download/${{env.VulkanSDKVersion}}/windows/VulkanSDK-${{env.VulkanSDKVersion}}-Installer.exe?u= -OutFile ../vulkan-sdk-${{env.VulkanSDKVersion}}.exe
+        $installer = Start-Process -FilePath ../vulkan-sdk-${{env.VulkanSDKVersion}}.exe -Wait -PassThru -ArgumentList @("/S");
+        $installer.WaitForExit();
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install GDAL
+      shell: powershell
+      run: |
+        conda install -c conda-forge gdal
+    - name: VSG Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: vsg-dev/VulkanSceneGraph
+        path: vsg
+    - name: VSG CMake Configure - MSBuild Build and Install
+      run: |
+        cd vsg
+        cmake . -G "Visual Studio 16 2019" -A x64 -DBUILD_SHARED_LIBS=ON
+        MSBuild.exe ALL_BUILD.vcxproj -p:Configuration=Release
+        MSBuild.exe INSTALL.vcxproj -p:Configuration=Release
+      env:
+        VULKAN_SDK: ${{steps.env.outputs.VULKAN_SDK}}
+    - name: vsgGIS CMake Configure - MSBuild Build and Install
+      run: |
+        cd main
+        cmake . -G "Visual Studio 16 2019" -A x64 -Dvsg_DIR="C:\Program Files\vsg\lib\cmake\vsg" -Dvsg_glslang_DIR="C:\Program Files\vsg\lib\cmake\vsg_glslang"
+        MSBuild.exe ALL_BUILD.vcxproj -p:Configuration=Release
+        MSBuild.exe INSTALL.vcxproj -p:Configuration=Release
+      env:
+        VULKAN_SDK: ${{steps.env.outputs.VULKAN_SDK}}
