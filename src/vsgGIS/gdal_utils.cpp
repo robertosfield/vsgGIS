@@ -21,11 +21,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
 
-#include <vsg/core/Value.h>
 #include <vsgGIS/gdal_utils.h>
+
+#include <vsg/core/Array2D.h>
 
 #include <cstring>
 #include <iostream>
+#include <functional>
 
 using namespace vsgGIS;
 

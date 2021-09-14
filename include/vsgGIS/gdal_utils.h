@@ -28,7 +28,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
 
-#include <vsg/core/Array2D.h>
+#include <vsg/core/Data.h>
+#include <vsg/maths/vec4.h>
 
 #include <memory>
 #include <set>

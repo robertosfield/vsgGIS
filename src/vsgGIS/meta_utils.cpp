@@ -21,7 +21,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </editor-fold> */
 
-#include <vsg/core/Value.h>
 #include <vsgGIS/meta_utils.h>
 
 #include <cstring>
