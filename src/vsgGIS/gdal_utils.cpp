@@ -24,6 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <vsgGIS/gdal_utils.h>
 
 #include <vsg/core/Array2D.h>
+#include <vsg/core/ConstVistior.h>
+#include <vsg/core/Vistior.h>
 
 #include <cstring>
 #include <iostream>
