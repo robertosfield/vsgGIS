@@ -5,5 +5,7 @@ workflow:
         source_package: vsgGIS
         target_project: home:rhabacker:branches:games:github-pr
   filters:
-    event: push
+    architectures:
+      only:
+        - x86_64
 
