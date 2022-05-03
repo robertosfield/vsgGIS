@@ -146,7 +146,7 @@ vsg::Path TileReader::getTilePath(const vsg::Path& src, uint32_t x, uint32_t y, 
         std::stringstream sstr;
         sstr << value;
         auto levelPos = path.find(match);
-        if (levelPos != std::string::npos) path.replace(levelPos, match.length(), sstr.str());
+        if (levelPos != vsg::Path::npos) path.replace(levelPos, match.length(), sstr.str());
     };
 
     vsg::Path path = src;
