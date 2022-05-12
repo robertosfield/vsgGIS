@@ -146,7 +146,7 @@ vsg::Path TileReader::getTilePath(const vsg::Path& src, uint32_t x, uint32_t y, 
         std::stringstream sstr;
         sstr << value;
         auto levelPos = path.find(match);
-        if (levelPos != std::string::npos) path.replace(levelPos, match.length(), sstr.str());
+        if (levelPos != vsg::Path::npos) path.replace(levelPos, match.length(), sstr.str());
     };
 
     vsg::Path path = src;
@@ -162,14 +162,14 @@ vsg::ref_ptr<vsg::Object> TileReader::read(const vsg::Path& filename, vsg::ref_p
     auto extension = vsg::lowerCaseFileExtension(filename);
     if (extension != ".tile") return {};
 
-    std::string tile_info = filename.substr(0, filename.length() - 5);
+    auto tile_info = filename.substr(0, filename.length() - 5);
     if (tile_info == "root")
     {
         return read_root(options);
     }
     else
     {
-        std::stringstream sstr(tile_info);
+        std::basic_stringstream<vsg::Path::value_type> sstr(tile_info);
 
         uint32_t x, y, lod;
         sstr >> x >> y >> lod;

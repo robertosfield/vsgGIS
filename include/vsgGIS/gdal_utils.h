@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <vsg/core/Data.h>
 #include <vsg/maths/vec4.h>
+#include <vsg/io/Path.h>
 
 #include <memory>
 #include <set>
@@ -40,15 +41,17 @@ namespace vsgGIS
     extern VSGGIS_DECLSPEC bool initGDAL();
 
     /// Call GDALOpen(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    inline std::shared_ptr<GDALDataset> openDataSet(const char* filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openDataSet(const vsg::Path& filename, GDALAccess access)
     {
-        return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpen(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
+        // GDAL doesn't support wide string filenames so convert vsg::Path to std::string and then pass to GDALOpen
+        return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpen(filename.string().c_str(), access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }
 
     /// Call GDALOpenShared(..) to open sepcified file returning a std::shared_ptr<GDALDataset> to reboustly manage the lifetime of the GDALDataSet, automatiically call GDALClose.
-    inline std::shared_ptr<GDALDataset> openSharedDataSet(const char* filename, GDALAccess access)
+    inline std::shared_ptr<GDALDataset> openSharedDataSet(const vsg::Path& filename, GDALAccess access)
     {
-        return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpenShared(filename, access)), [](GDALDataset* dataset) { GDALClose(dataset); });
+        // GDAL doesn't support wide string filenames so convert vsg::Path to std::string and then pass to GDALOpenShared
+        return std::shared_ptr<GDALDataset>(static_cast<GDALDataset*>(GDALOpenShared(filename.string().c_str(), access)), [](GDALDataset* dataset) { GDALClose(dataset); });
     }
 
     /// return true if two GDALDataset has the same projection referecne string/
