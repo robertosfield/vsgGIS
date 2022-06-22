@@ -175,7 +175,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read(const vsg::Path& filename, vsg::ref_p
         uint32_t x, y, lod;
         sstr >> x >> y >> lod;
 
-        vsg::info("read(", filename, ") -> tile_info = ", tile_info, ", x = ", x, ", y = ", y, ", z = ", lod);
+        vsg::debug("read(", filename, ") -> tile_info = ", tile_info, ", x = ", x, ", y = ", y, ", z = ", lod);
 
         return read_subtile(x, y, lod, options);
     }
@@ -303,7 +303,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
                         plod->filename = vsg::make_string(tileID.local_x, " ", tileID.local_y, " ", local_lod, ".tile");
                         plod->options = options;
 
-                        vsg::info("plod->filename ", plod->filename);
+                        vsg::debug("plod->filename ", plod->filename);
 
                         group->addChild(plod);
                     }
