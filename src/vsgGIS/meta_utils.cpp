@@ -22,10 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </editor-fold> */
 
 #include <vsg/core/Value.h>
+#include <vsg/io/Logger.h>
 #include <vsgGIS/meta_utils.h>
 
 #include <cstring>
-#include <iostream>
 
 using namespace vsgGIS;
 
@@ -89,7 +89,7 @@ bool vsgGIS::getEXIF_LatitudeLongitudeAlititude(const vsg::Object& object, doubl
         str.clear();
         str.str(value_str);
         str >> vsgGIS::dms_in_brackets(latitude);
-        std::cout << "vsgGA::getEXIF_..    EXIF_GPSLatitude = " << value_str << " degrees = " << latitude << std::endl;
+        vsg::info("vsgGA::getEXIF_..    EXIF_GPSLatitude = ", value_str, " degrees = ", latitude);
         success = true;
     }
     if (object.getValue("EXIF_GPSLongitude", value_str))
@@ -97,7 +97,7 @@ bool vsgGIS::getEXIF_LatitudeLongitudeAlititude(const vsg::Object& object, doubl
         str.clear();
         str.str(value_str);
         str >> vsgGIS::dms_in_brackets(longitude);
-        std::cout << "vsgGA::getEXIF_..    EXIF_GPSLongitude = " << value_str << " degrees = " << longitude << std::endl;
+        vsg::info("vsgGA::getEXIF_..    EXIF_GPSLongitude = ", value_str, " degrees = ", longitude);
         success = true;
     }
     if (object.getValue("EXIF_GPSAltitude", value_str))
@@ -105,7 +105,7 @@ bool vsgGIS::getEXIF_LatitudeLongitudeAlititude(const vsg::Object& object, doubl
         str.clear();
         str.str(value_str);
         str >> vsgGIS::in_brackets(altitude);
-        std::cout << "vsgGA::getEXIF_..    EXIF_GPSAltitude = " << value_str << " altitude = " << altitude << std::endl;
+        vsg::info("vsgGA::getEXIF_..    EXIF_GPSAltitude = ", value_str, " altitude = ", altitude);
         success = true;
     }
     return success;

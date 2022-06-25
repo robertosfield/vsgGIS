@@ -1,5 +1,6 @@
 #include <vsgGIS/TileDatabase.h>
 
+#include <vsg/io/Logger.h>
 #include <vsg/io/Options.h>
 
 #include "shaders/simple_tile_frag.cpp"
@@ -174,7 +175,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read(const vsg::Path& filename, vsg::ref_p
         uint32_t x, y, lod;
         sstr >> x >> y >> lod;
 
-        // std::cout<<"read("<<filename<<") -> tile_info = "<<tile_info<<", x = "<<x<<", y = "<<y<<", z = "<<lod<<std::endl;
+        vsg::debug("read(", filename, ") -> tile_info = ", tile_info, ", x = ", x, ", y = ", y, ", z = ", lod);
 
         return read_subtile(x, y, lod, options);
     }
@@ -302,7 +303,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
                         plod->filename = vsg::make_string(tileID.local_x, " ", tileID.local_y, " ", local_lod, ".tile");
                         plod->options = options;
 
-                        //std::cout<<"plod->filename "<<plod->filename<<std::endl;
+                        vsg::debug("plod->filename ", plod->filename);
 
                         group->addChild(plod);
                     }
@@ -331,7 +332,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
 
     if (group->children.size() != 4)
     {
-        std::cout << "Warning: could not load all 4 subtiles, loaded only " << group->children.size() << std::endl;
+        vsg::warn("Warning: could not load all 4 subtiles, loaded only ", group->children.size());
 
         return {};
     }
@@ -380,7 +381,7 @@ void TileReader::init(vsg::ref_ptr<const vsg::Options> options)
 
         if (!vertexShader || !fragmentShader)
         {
-            std::cout << "Could not create shaders." << std::endl;
+            vsg::error("Could not create shaders.");
         }
 
         vsg::VertexInputState::Bindings vertexBindingsDescriptions{

@@ -1,7 +1,6 @@
 #include <vsg/all.h>
 
 #include <chrono>
-#include <iostream>
 #include <ostream>
 #include <thread>
 
@@ -16,7 +15,7 @@ int main(int argc, char** argv)
 
     if (argc < 3)
     {
-        std::cout << "usage:\n    vsggis input.tif [input.tif] [input.tif] [inputfile.tif] output.vsgt" << std::endl;
+        vsg::info("usage:\n    vsggis input.tif [input.tif] [input.tif] [inputfile.tif] output.vsgt");
         return 1;
     }
 
@@ -33,29 +32,29 @@ int main(int argc, char** argv)
 
     if (datasets.empty())
     {
-        std::cout << "No datasets loaded." << std::endl;
+        vsg::info("No datasets loaded.");
         return 1;
     }
 
     bool result = vsgGIS::all_equal(datasets.begin(), datasets.end(), vsgGIS::compatibleDatasetProjectionsTransformAndSizes);
     if (!result)
     {
-        std::cout << "datasets are not compatible." << std::endl;
+        vsg::info("datasets are not compatible.");
         return 1;
     }
 
     auto types = vsgGIS::dataTypes(datasets.begin(), datasets.end());
     if (types.size() > 1)
     {
-        std::cout << "multiple input data types not suported." << std::endl;
+        vsg::info("multiple input data types not suported.");
         for (auto& type : types)
         {
-            std::cout << "   GDALDataType " << GDALGetDataTypeName(type) << std::endl;
+            vsg::info("   GDALDataType ", GDALGetDataTypeName(type));
         }
         return 1;
     }
 
-    std::cout << "datasets are compatible." << std::endl;
+    vsg::info("datasets are compatible.");
 
     GDALDataType dataType = *types.begin();
 
@@ -78,19 +77,19 @@ int main(int argc, char** argv)
             }
             else
             {
-                std::cout << "Undefined classification on raster band " << i << std::endl;
+                vsg::info("Undefined classification on raster band ", i);
             }
         }
     }
 
-    std::cout << "rasterBands.size() = " << rasterBands.size() << std::endl;
+    vsg::info("rasterBands.size() = ", rasterBands.size());
 
     int numComponents = rasterBands.size();
     if (numComponents == 3) numComponents = 4;
 
     if (numComponents > 4)
     {
-        std::cout << "Too many raster bands to merge into a single output, maximum of 4 raster bands supported." << std::endl;
+        vsg::info("Too many raster bands to merge into a single output, maximum of 4 raster bands supported.");
         return 1;
     }
 
@@ -117,7 +116,7 @@ int main(int argc, char** argv)
     vsg::Path output_filename = arguments[argc - 1];
     vsg::write(image, output_filename);
 
-    std::cout << "Written output to " << output_filename << std::endl;
+    vsg::info("Written output to ", output_filename);
 
     return 0;
 }
