@@ -332,7 +332,7 @@ vsg::ref_ptr<vsg::Object> TileReader::read_subtile(uint32_t x, uint32_t y, uint3
 
     if (group->children.size() != 4)
     {
-        vsg::warn("Warning: could not load all 4 subtiles, loaded only ", group->children.size());
+        vsg::warn("Could not load all 4 subtiles, loaded only ", group->children.size(), " tiles.");
 
         return {};
     }
