@@ -1,15 +1,16 @@
 #include <vsg/io/VSG.h>
 static auto simple_tile_frag = []() {std::istringstream str(
-R"(#vsga 0.1.3
+R"(#vsga 0.5.0
 Root id=1 vsg::ShaderStage
 {
-  NumUserObjects 0
-  Stage 16
-  EntryPoint "main"
-  ShaderModule id=2 vsg::ShaderModule
+  userObjects 0
+  stage 16
+  entryPointName "main"
+  module id=2 vsg::ShaderModule
   {
-    NumUserObjects 0
-    Source "#version 450
+    userObjects 0
+    hints id=0
+    source "#version 450
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(binding = 0) uniform sampler2D texSampler;
@@ -23,9 +24,8 @@ void main() {
     outColor = texture(texSampler, fragTexCoord);
 }
 "
-    hints id=0
-    SPIRVSize 173
-    SPIRV 119734787 65536 524298 23 0 131089 1 393227 1 1280527431 1685353262 808793134
+    code 173
+     119734787 65536 524298 23 0 131089 1 393227 1 1280527431 1685353262 808793134
      0 196622 0 1 524303 4 4 1852399981 0 9 17 22
      196624 4 7 196611 2 450 589828 1096764487 1935622738 1918988389 1600484449 1684105331
      1868526181 1667590754 29556 262149 4 1852399981 0 327685 9 1131705711 1919904879 0
